@@ -1,0 +1,26 @@
+(function(){ "use strict";
+var p=new URLSearchParams(location.search), tool=p.get("tool")||"", input={};p.forEach(function(v,k){input[k]=v;});
+var title=document.getElementById("tool-title"),desc=document.getElementById("tool-description"),inp=document.getElementById("tool-input"),status=document.getElementById("tool-status"),result=document.getElementById("tool-result");
+var names={echo:"Echo 回显",calc:"数学计算",text:"文本转换",count:"文本统计",json:"JSON 处理",encode:"编码与解码",random:"随机值",time:"时间信息",convert:"单位换算",hash:"SHA-256",read:"读取记录"};
+title.textContent=names[tool]||"URL 工具";inp.textContent=JSON.stringify(input,null,2);
+function done(state,out,err){var r={protocol:"URL-Agent/0.1",tool:tool,status:state,input:input};if(state==="error")r.error={message:String(err)};else r.output=out;status.textContent=state==="ok"?"执行完成":state==="ready"?"缺少参数":"执行失败";result.textContent=JSON.stringify(r,null,2);}
+function need(k){if(!p.has(k))throw Error("缺少参数："+k);return p.get(k);}
+function calc(s){var a=s.match(/[0-9.]+|[()+*/%-]/g)||[];if(a.join("")!==s.replace(/\s/g,""))throw Error("表达式格式不支持");var i=0;function atom(){var t=a[i++];if(t==="("){var n=sum();if(a[i++]!==")")throw Error("括号不匹配");return n;}if(t==="-")return -atom();if(t==="+")return atom();var n=Number(t);if(!Number.isFinite(n))throw Error("数字格式错误");return n;}function product(){var n=atom();while(["*","/","%"].includes(a[i])){var op=a[i++],v=atom();if((op==="/"||op==="%")&&v===0)throw Error("不能除以零");n=op==="*"?n*v:op==="/"?n/v:n%v;}return n;}function sum(){var n=product();while(a[i]==="+"||a[i]==="-"){var op=a[i++],v=product();n=op==="+"?n+v:n-v;}return n;}var v=sum();if(i!==a.length||!Number.isFinite(v))throw Error("表达式无法计算");return v;}
+function b64(s){var b=new TextEncoder().encode(s),x="";b.forEach(c=>x+=String.fromCharCode(c));return btoa(x);}
+function unb64(s){var x=atob(s),b=Uint8Array.from(x,c=>c.charCodeAt(0));return new TextDecoder().decode(b);}
+async function run(){try{var o,t=tool;if(t==="echo"){o={message:p.get("message")||""};}
+else if(t==="calc"){var e=need("expr");o={expression:e,value:calc(e)};}
+else if(t==="text"){var s=need("text"),op=p.get("op")||"upper",v;if(op==="upper")v=s.toUpperCase();else if(op==="lower")v=s.toLowerCase();else if(op==="reverse")v=Array.from(s).reverse().join("");else if(op==="trim")v=s.trim();else if(op==="replace")v=s.split(need("find")).join(p.get("with")||"");else throw Error("op 不支持");o={operation:op,result:v};}
+else if(t==="count"){var s=p.get("text")||"",q=s.trim();o={characters:Array.from(s).length,words:q?q.split(/\s+/).length:0,lines:s?s.split(/\r\n|\r|\n/).length:0,utf8Bytes:new TextEncoder().encode(s).length};}
+else if(t==="json"){var v=JSON.parse(need("data")),m=p.get("mode")||"pretty";o=m==="keys"?{keys:Object.keys(v)}:{formatted:JSON.stringify(v,null,m==="minify"?0:2),value:v};}
+else if(t==="encode"){var s=need("text"),m=p.get("mode")||"url-encode",v=m==="url-encode"?encodeURIComponent(s):m==="url-decode"?decodeURIComponent(s):m==="base64-encode"?b64(s):m==="base64-decode"?unb64(s):null;if(v===null)throw Error("mode 不支持");o={mode:m,result:v};}
+else if(t==="random"){var m=p.get("type")||"uuid";o=m==="uuid"?{type:m,value:crypto.randomUUID()}:m==="float"?{type:m,value:Math.random()}:(function(){var min=Number(p.get("min")||0),max=Number(p.get("max")||100);if(!Number.isInteger(min)||!Number.isInteger(max)||max<min)throw Error("min/max 无效");return{type:m,min:min,max:max,value:Math.floor(Math.random()*(max-min+1))+min};})();if(!["uuid","float","int"].includes(m))throw Error("type 不支持");}
+else if(t==="time"){var d=new Date(),z=p.get("tz")||"UTC";o={iso:d.toISOString(),unixSeconds:Math.floor(d.getTime()/1000),timeZone:z,formatted:new Intl.DateTimeFormat("zh-CN",{dateStyle:"full",timeStyle:"long",timeZone:z}).format(d)};}
+else if(t==="convert"){var n=Number(need("value")),f=need("from"),to=need("to"),L={m:1,km:1000,cm:.01,mm:.001,mi:1609.344,ft:.3048,in:.0254},M={kg:1,g:.001,mg:.000001,lb:.45359237,oz:.028349523125},v;if(L[f]&&L[to])v=n*L[f]/L[to];else if(M[f]&&M[to])v=n*M[f]/M[to];else if(["C","F","K"].includes(f)&&["C","F","K"].includes(to)){var c=f==="C"?n:f==="F"?(n-32)*5/9:n-273.15;v=to==="C"?c:to==="F"?c*9/5+32:c+273.15;}else throw Error("单位不支持或类别不匹配");o={value:n,from:f,to:to,result:v};}
+else if(t==="hash"){var h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(need("text")));o={algorithm:"SHA-256",hex:Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,"0")).join("")};}
+else if(t==="read"){var path=p.get("path")||"data.txt";if(!["data.txt","data/records.json"].includes(path))throw Error("path 不支持");var r=await fetch("https://raw.githubusercontent.com/Xun-Ci/ai-Site/main/"+path+"?v="+Date.now(),{cache:"no-store"});var s=await r.text();if(!r.ok)throw Error("HTTP "+r.status);var records=path==="data.txt"?s.split(/\r?\n/).filter(Boolean).map(x=>{try{return JSON.parse(x)}catch(_){return{raw:x}}}):(JSON.parse(s).records||[]);o={path:path,count:records.length,records:records};}
+else throw Error("tool 参数缺失或工具不存在。可用工具："+Object.keys(names).join(", "));
+done("ok",o);
+}catch(e){done("error",null,e.message||e);}}
+if(!tool){desc.textContent="请使用 ?tool=echo、calc、text、count、json、encode、random、time、convert、hash 或 read。";done("ready",{available:Object.keys(names)});}else run();
+})();

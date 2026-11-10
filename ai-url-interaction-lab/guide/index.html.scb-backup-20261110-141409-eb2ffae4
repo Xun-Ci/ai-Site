@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>使用说明 · URL Agent Lab</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <script defer src="../assets/app.js"></script>
+</head>
+<body data-base="../" data-page="guide">
+  <header class="topbar"><a class="brand" href="../"><span class="brand-mark">U</span><span>URL Agent Lab</span></a><a class="top-note" href="../">返回首页</a></header>
+  <main class="container">
+    <div class="breadcrumb"><a href="../">首页</a> / 使用说明</div>
+    <article class="content-card">
+      <p class="eyebrow">START HERE · FOR AI BROWSERS</p>
+      <h1>URL 驱动交互使用说明</h1>
+      <p class="lead">本页是整个实验的入口说明。AI 应先阅读本页，再根据任务访问对应的功能路径。</p>
+
+      <h2>1. 核心规则</h2>
+      <p>本项目把网站拆成多个固定路径。路径决定进入哪个功能，URL 查询参数负责把输入值传给该功能。网页中的 JavaScript 读取参数并渲染结果。</p>
+      <ul>
+        <li><strong>路径（path）</strong>：选择功能，例如 <code>/guide/</code>、<code>/write/</code>、<code>/tools/echo.html</code>。</li>
+        <li><strong>查询参数（query）</strong>：传递输入，例如 <code>?text=你好&amp;from=AI</code>。</li>
+        <li><strong>组合参数</strong>：使用 <code>&amp;</code> 连接，例如 <code>?text=你好&amp;from=ChatGPT&amp;tag=test</code>。</li>
+        <li><strong>中文和空格</strong>：建议使用 URL 编码；浏览器的 URLSearchParams 会自动解码。</li>
+      </ul>
+
+      <h2>2. 功能路径表</h2>
+      <ul>
+        <li><a href="../">首页</a>：<code>/</code>，列出所有功能。</li>
+        <li><a href="../guide/">使用说明</a>：<code>/guide/</code>，当前页面。</li>
+        <li><a href="../write/">参数写入</a>：<code>/write/</code>，读取参数并生成记录分享链接。</li>
+        <li><a href="../inbox.html">记录查看</a>：<code>/inbox.html</code>，查看分享记录和本浏览器本地历史。</li>
+        <li><a href="../tools/echo.html?message=Hello%20Agent">Echo 分支</a>：<code>/tools/echo.html?message=...</code>，回显收到的参数。</li>
+        <li><a href="../interaction/">非 URL 交互</a>：<code>/interaction/</code>，按钮、表单、复选框演示。</li>
+      </ul>
+
+      <h2>3. 参数写入格式</h2>
+      <p>将要写入的文本放在 <code>text</code> 参数中，来源放在 <code>from</code> 参数中。可以添加任意其他普通文本参数。</p>
+      <span class="code-sample">/write/?text=AI%20%E5%B7%B2%E5%AE%8C%E6%88%90%E6%B5%8B%E8%AF%95&amp;from=ChatGPT&amp;tag=demo</span>
+      <p>也可以直接打开以下可运行示例：</p>
+      <p><a class="button primary" href="../write/?text=这是一条来自URL的测试记录&from=Guide&tag=sample">运行写入示例</a></p>
+      <p>写入页会显示收到的参数，并生成一条带有 <code>record</code> 参数的分享链接。把该分享链接发给你，或者由你在自己的浏览器打开，即可查看该条记录。</p>
+
+      <h2>4. 调用 Echo 功能分支</h2>
+      <p>路径选择 Echo 功能，<code>message</code> 参数提供输入：</p>
+      <span class="code-sample">/tools/echo.html?message=Hello%20Agent</span>
+      <p><a href="../tools/echo.html?message=Hello%20Agent">打开 Echo 示例</a></p>
+
+      <h2>5. 给 AI 的推荐操作顺序</h2>
+      <ol>
+        <li>先访问 <code>/guide/</code>，读懂本页约定。</li>
+        <li>根据用户任务选择对应路径，不要猜测未列出的功能。</li>
+        <li>需要传值时，在 URL 后追加查询参数。</li>
+        <li>打开页面后读取页面显示的结果；若页面生成分享链接，把完整链接返回给用户。</li>
+        <li>如果要写入多行或复杂文本，先进行 URL 编码，并注意浏览器和平台对 URL 长度的限制。</li>
+      </ol>
+
+      <h2>6. 不通过 URL 的交互</h2>
+      <p>浏览器还可以通过页面按钮、表单、复选框和 JavaScript 事件交互。请访问 <a href="../interaction/">/interaction/</a> 测试。纯浏览型 AI 如果不能点击或输入网页控件，就无法使用这些交互；URL 路径和参数仍是更容易兼容的入口。</p>
+
+      <h2>7. 重要限制与安全</h2>
+      <ul>
+        <li>本项目是纯静态 GitHub Pages，没有后端、数据库或跨设备同步。</li>
+        <li>浏览器 localStorage 只属于当前浏览器/设备；AI 浏览器的 localStorage 不会自动出现在你的浏览器里。</li>
+        <li>分享链接把记录编码在 URL 中，因此可复制、转发和长期查看；任何拿到链接的人都能看到其中内容。</li>
+        <li>不要把密码、API Key、银行卡信息、身份证号或其他敏感内容放进 URL。</li>
+        <li>URL 参数不是身份认证，也不能安全地执行服务器端操作。它只是在页面端传递普通输入。</li>
+        <li>URL 太长时可能被浏览器或平台截断；大文件和大量数据不适合这种方式。</li>
+      </ul>
+      <div class="notice"><strong>一句话总结：</strong>路径负责选功能，查询参数负责传输入，页面负责解析和显示，分享 URL 负责把结果带给另一个浏览器。</div>
+      <div class="actions"><a class="button primary" href="../write/?text=Guide%20read%20successfully&from=AI">测试参数写入</a><a class="button secondary" href="../">返回首页</a></div>
+    </article>
+  </main>
+  <footer class="footer">URL Agent Lab · Guide</footer>
+</body>
+</html>

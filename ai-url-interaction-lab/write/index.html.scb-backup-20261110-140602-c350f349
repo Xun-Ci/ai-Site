@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URL 参数写入 · URL Agent Lab</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <script defer src="../assets/app.js"></script>
+</head>
+<body data-base="../" data-page="write">
+  <header class="topbar"><a class="brand" href="../"><span class="brand-mark">U</span><span>URL Agent Lab</span></a><a class="top-note" href="../guide/">使用说明</a></header>
+  <main class="container">
+    <div class="breadcrumb"><a href="../">首页</a> / URL 参数写入</div>
+    <article class="content-card">
+      <p class="eyebrow">INPUT VIA QUERY STRING</p>
+      <h1>URL 参数写入实验</h1>
+      <p class="lead">AI 可以直接在网址后添加参数；页面打开后会自动读取参数、显示内容，并生成一条可分享的记录链接。</p>
+      <div class="notice">示例：<code>?text=Hello%20from%20AI&amp;from=ChatGPT&amp;tag=demo</code>。页面不会向任何服务器发送数据。</div>
+
+      <h2>通过表单生成测试 URL</h2>
+      <form class="form-grid" action="./" method="get">
+        <div class="field"><label for="write-text">要写入的内容（text）</label><textarea id="write-text" name="text" maxlength="4000" placeholder="输入一段要传递给网页的内容"></textarea></div>
+        <div class="field"><label for="write-from">来源（from）</label><input id="write-from" name="from" type="text" maxlength="100" placeholder="例如 ChatGPT、DeepSeek"></div>
+        <div class="field"><label for="write-tag">标签（tag，可选）</label><input id="write-tag" name="tag" type="text" maxlength="100" placeholder="例如 experiment-01"></div>
+        <div class="actions"><button class="button primary" type="submit">通过 URL 参数提交</button><a class="button secondary" href="../inbox.html">查看记录</a></div>
+      </form>
+
+      <section id="write-result" aria-live="polite" style="margin-top:24px">
+        <div class="empty">等待 URL 参数。AI 可直接访问 /write/?text=内容&amp;from=AI。</div>
+      </section>
+      <h2>给 AI 的调用示例</h2>
+      <pre>访问 /write/?text=AI已完成测试&from=DeepSeek&tag=demo
+请读取页面显示的参数，并把生成的记录分享链接返回给用户。</pre>
+    </article>
+  </main>
+  <footer class="footer">URL Agent Lab · Write</footer>
+</body>
+</html>

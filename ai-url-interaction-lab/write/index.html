@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URL 直接写入 GitHub</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../"><span class="brand-mark">U</span><span>URL Agent Lab</span></a>
+  </header>
+  <main class="container">
+    <article class="content-card">
+      <p class="eyebrow">DIRECT URL WRITE</p>
+      <h1>URL 直接写入 GitHub 文件</h1>
+      <p class="lead">访问本页时，网页自动读取 URL 参数，并将内容追加到 GitHub 仓库根目录的 data.txt。</p>
+      <div id="status" class="notice">正在读取 URL 参数……</div>
+      <pre id="result">等待执行</pre>
+    </article>
+  </main>
+  <script>
+  (async function () {
+    const OWNER = "Xun-Ci";
+    const REPO = "ai-Site";
+    const BRANCH = "main";
+    const FILE_PATH = "data.txt";
+    const status = document.getElementById("status");
+    const result = document.getElementById("result");
+
+    function show(message, detail) {
+      status.textContent = message;
+      result.textContent = detail || "";
+    }
+
+    function encodeBase64Utf8(value) {
+      const bytes = new TextEncoder().encode(value);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary);
+    }
+
+    function decodeBase64Utf8(value) {
+      const binary = atob(value.replace(/\s/g, ""));
+      const bytes = Uint8Array.from(binary, function (char) { return char.charCodeAt(0); });
+      return new TextDecoder().decode(bytes);
+    }
+
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token") || "";
+      const text = params.get("text") ?? params.get("content") ?? params.get("message") ?? "";
+      const source = params.get("from") || "DeepSeek";
+
+      if (!token) throw new Error("URL 缺少 token 参数。");
+      if (!text) throw new Error("URL 缺少 text 参数。");
+
+      show("正在读取 GitHub 文件……", "目标文件：" + FILE_PATH);
+
+      const apiUrl = "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/" + FILE_PATH;
+      const headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": "Bearer " + token,
+        "X-GitHub-Api-Version": "2022-11-28"
+      };
+
+      const readResponse = await fetch(apiUrl + "?ref=" + encodeURIComponent(BRANCH), {
+        method: "GET",
+        headers: headers
+      });
+
+      let oldContent = "";
+      let sha = null;
+
+      if (readResponse.ok) {
+        const file = await readResponse.json();
+        oldContent = decodeBase64Utf8(file.content || "");
+        sha = file.sha;
+      } else if (readResponse.status !== 404) {
+        const errorText = await readResponse.text();
+        throw new Error("读取 GitHub 文件失败（HTTP " + readResponse.status + "）：" + errorText);
+      }
+
+      const record = JSON.stringify({
+        time: new Date().toISOString(),
+        from: source,
+        text: text
+      }) + "\n";
+
+      const newContent = oldContent + record;
+      const body = {
+        message: "URL Agent Lab: append data",
+        content: encodeBase64Utf8(newContent),
+        branch: BRANCH
+      };
+      if (sha) body.sha = sha;
+
+      show("正在写入 GitHub 仓库……", "正在追加内容：" + text);
+
+      const writeResponse = await fetch(apiUrl, {
+        method: "PUT",
+        headers: Object.assign({}, headers, { "Content-Type": "application/json" }),
+        body: JSON.stringify(body)
+      });
+
+      const writeResult = await writeResponse.json();
+      if (!writeResponse.ok) {
+        throw new Error("写入 GitHub 文件失败（HTTP " + writeResponse.status + "）：" + JSON.stringify(writeResult));
+      }
+
+      show("写入成功！", JSON.stringify({
+        file: FILE_PATH,
+        branch: BRANCH,
+        from: source,
+        writtenText: text,
+        commit: writeResult.commit && writeResult.commit.html_url
+      }, null, 2));
+    } catch (error) {
+      show("写入失败", error.message);
+    }
+  })();
+  </script>
+</body>
+</html>

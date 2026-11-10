@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Echo 工具分支 · URL Agent Lab</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <script defer src="../assets/app.js"></script>
+</head>
+<body data-base="../" data-page="echo">
+  <header class="topbar"><a class="brand" href="../"><span class="brand-mark">U</span><span>URL Agent Lab</span></a><a class="top-note" href="../guide/">使用说明</a></header>
+  <main class="container">
+    <div class="breadcrumb"><a href="../">首页</a> / 工具分支 / Echo</div>
+    <article class="content-card">
+      <p class="eyebrow">ROUTE BRANCH · ECHO</p>
+      <h1>Echo 参数回显</h1>
+      <p class="lead">访问这个独立路径，并通过 <code>message</code> 参数传入文字。页面会回显输入内容。</p>
+      <div class="result"><h3>收到的 message</h3><p id="echo-output">正在读取参数……</p></div>
+      <h2>收到的全部参数</h2>
+      <pre id="echo-params">{}</pre>
+      <h2>调用格式</h2>
+      <span class="code-sample">/tools/echo.html?message=Hello%20Agent</span>
+      <div class="actions"><a class="button primary" href="./echo.html?message=Hello%20again">再次测试</a><a class="button secondary" href="../">返回首页</a></div>
+    </article>
+  </main>
+  <footer class="footer">URL Agent Lab · Echo Branch</footer>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>记录查看 · URL Agent Lab</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script defer src="./assets/app.js"></script>
+</head>
+<body data-base="./" data-page="inbox">
+  <header class="topbar"><a class="brand" href="./"><span class="brand-mark">U</span><span>URL Agent Lab</span></a><a class="top-note" href="./guide/">使用说明</a></header>
+  <main class="container">
+    <div class="breadcrumb"><a href="./">首页</a> / 记录查看</div>
+    <article class="content-card">
+      <p class="eyebrow">SHARED RECORDS & LOCAL HISTORY</p>
+      <h1>记录查看</h1>
+      <p class="lead">通过分享链接打开的记录会显示在上方；本浏览器保存过的历史记录显示在下方。</p>
+      <div id="shared-record"></div>
+      <section style="margin-top:30px">
+        <div class="section-heading" style="margin:0 0 12px">
+          <div><p class="eyebrow">THIS BROWSER ONLY</p><h2>本地历史（<span id="record-count">0</span>）</h2></div>
+          <button class="button secondary" type="button" id="clear-records">清空本地历史</button>
+        </div>
+        <p class="muted">本地历史只存在于当前浏览器。要在其他设备查看，请使用 AI 返回的完整分享链接。</p>
+        <div id="record-list" class="record-list"><div class="empty">正在读取记录……</div></div>
+      </section>
+      <div class="actions"><a class="button primary" href="./write/">新建测试记录</a><a class="button secondary" href="./">返回首页</a></div>
+    </article>
+  </main>
+  <footer class="footer">URL Agent Lab · Inbox</footer>
+</body>
+</html>

@@ -1,24 +1,45 @@
-URL Agent Lab
+# URL-Agent Lab
 
-GitHub Pages 上的最小 URL 直接写入实验。
+**URL-Agent Protocol (UAP) v0.1 — experimental**
 
-功能
+Live site: https://xun-ci.github.io/ai-Site/
 
-访问 /write/ 并传入 URL 参数，页面会自动调用 GitHub API，把一条记录追加到仓库根目录的 data.txt。
+- Home: https://xun-ci.github.io/ai-Site/
+- Tool catalog: https://xun-ci.github.io/ai-Site/guide/
+- Protocol: https://xun-ci.github.io/ai-Site/protocol/
+- Tool endpoint: https://xun-ci.github.io/ai-Site/tools/?tool=calc&expr=2%2B3
 
-URL 格式
+## Tools
 
-https://xun-ci.github.io/ai-Site/write/?token=你的GitHubToken&text=Hello%20from%20DeepSeek&from=DeepSeek
+| Tool | Parameters | Purpose |
+|---|---|---|
+| echo | message | Echo text |
+| calc | expr | Safe arithmetic parser |
+| text | op, text, find, with | Text transformations |
+| count | text | Text statistics |
+| json | data, mode | Parse, format, minify, list keys |
+| encode | mode, text | URL and Base64 encoding |
+| random | type, min, max | UUID and random numbers |
+| time | tz | Current time and timezone |
+| convert | value, from, to | Length, mass and temperature |
+| hash | text | SHA-256 |
+| read | path | Read public repository data |
+| write | token, text, from | Append a record to data.txt |
 
-参数
-- token：GitHub Personal Access Token
-- text：写入内容
-- from：来源名称
+## URL-Agent Protocol
 
-写入目标
-- 仓库：Xun-Ci/ai-Site
-- 分支：main
-- 文件：data.txt
+A tool is selected by the `tool` query parameter. Other query parameters are the tool input. Tool pages return a visible JSON envelope:
 
-部署
-将本项目文件夹中的文件和目录全部上传到 GitHub 仓库根目录，提交到 main。GitHub Pages 使用 main 分支的 /(root) 目录。
+```json
+{
+  "protocol": "URL-Agent/0.1",
+  "tool": "calc",
+  "status": "ok",
+  "input": { "expr": "2+3" },
+  "output": { "value": 5 }
+}
+```
+
+This is an experimental project convention, not an official MCP replacement or registered Internet standard.
+
+GitHub Pages serves the repository root from the `main` branch.

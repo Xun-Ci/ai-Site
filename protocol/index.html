@@ -1,1 +1,22 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>URL-Agent Protocol v0.1</title><link rel="stylesheet" href="../assets/style.css"></head><body><header class="topbar"><a class="brand" href="../"><span class="brand-mark">U</span><span>URL-Agent Lab</span></a><a class="top-note" href="../guide/">工具目录</a></header><main class="container"><article class="content-card"><p class="eyebrow">EXPERIMENTAL INTERFACE CONVENTION</p><h1>URL-Agent Protocol v0.1</h1><p class="lead">以普通网页 URL 表达工具入口、输入参数和可读取结果的实验性接口约定。</p><h2>接口结构</h2><pre>https://host/{tool-path}?{input-parameters}</pre><ul><li>路径标识工具。</li><li>查询参数提供输入。</li><li>页面执行对应操作并显示结果。</li></ul><h2>统一结果结构</h2><pre>{"protocol":"URL-Agent/0.1","tool":"tool-name","status":"ok","input":{},"output":{}}</pre><p>状态可为 ok、error、ready。错误结果包含 error.message。</p><h2>工具列表</h2><p><a href="../guide/">查看工具目录和每个工具的参数说明。</a></p><h2>参数格式</h2><p>使用标准 URL 查询字符串；多个参数以 &amp; 分隔，文本按 UTF-8 百分号编码。</p><h2>范围</h2><p>URL-Agent Protocol 是本项目提出的实验性约定，并非已注册的互联网标准，也不是 MCP 的官方替代协议。它使用普通 HTTPS 页面、路径和查询参数，适合通过网页浏览器访问的轻量工具。</p><p>写入工具会修改仓库内容，与只读及计算工具不同。访问链接中的凭证可能留存在浏览器历史和日志。</p><p><a href="../">返回主页</a></p></article></main><footer class="footer">URL-Agent Protocol · v0.1 experimental</footer></body></html>
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>URL-Agent Protocol v0.1</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body><header class="topbar"><a class="brand" href="../"><span class="brand-mark">U</span><span>URL-Agent Lab</span></a><a class="top-note" href="../guide/">工具目录</a></header>
+<main class="container"><article class="content-card">
+<p class="eyebrow">EXPERIMENTAL INTERFACE CONVENTION</p><h1>URL-Agent Protocol v0.1</h1><p class="lead">一种以普通网页 URL 表达工具入口、输入参数和可读取结果的实验性接口约定。</p>
+<h2>接口结构</h2><pre>https://host/tools/?tool={tool-name}&{input-parameters}</pre>
+<ul><li>URL 路径指向工具执行页面。</li><li>tool 参数选择具体工具。</li><li>其他查询参数提供工具输入。</li><li>页面展示执行状态和 JSON 输出。</li></ul>
+<h2>统一结果结构</h2><pre>{
+  "protocol": "URL-Agent/0.1",
+  "tool": "tool-name",
+  "status": "ok",
+  "input": {},
+  "output": {}
+}</pre>
+<p>status 可为 ok、error 或 ready。error 结果包含 error.message；ready 结果描述缺少的参数。</p>
+<h2>工具清单</h2><p><a href="../guide/">查看 12 个工具的路径、参数和调用示例。</a></p>
+<h2>参数编码</h2><p>使用标准 URL 查询字符串，多个参数用 &amp; 分隔，文本使用 UTF-8 百分号编码。</p>
+<h2>协议定位</h2><p>URL-Agent Protocol 是本项目提出的实验性约定，不是已注册的互联网标准，也不是 MCP 的官方替代协议。它复用普通 HTTPS 网页、URL 路径和查询参数，使浏览器型客户端能够通过访问网页使用工具。</p>
+<h2>执行类型</h2><p>多数工具在浏览器中本地执行；Read 读取公开仓库文件；Write 通过 GitHub API 修改 data.txt。Write 属于有副作用的接口，需要 GitHub Token。</p>
+<p>将 Token 放入 URL 可能使其出现在浏览器历史或请求日志中。实验时应使用权限受限且短期有效的 Token。</p>
+<div class="actions"><a class="button primary" href="../guide/">查看工具目录</a><a class="button secondary" href="../">返回主页</a></div>
+</article></main><footer class="footer">URL-Agent Protocol · v0.1 experimental</footer></body></html>

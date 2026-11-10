@@ -1,1 +1,38 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>工具目录 · URL-Agent Lab</title><link rel="stylesheet" href="../assets/style.css"></head><body><header class="topbar"><a class="brand" href="../"><span class="brand-mark">U</span><span>URL-Agent Lab</span></a><a class="top-note" href="../protocol/">协议说明</a></header><main class="container"><article class="content-card"><p class="eyebrow">TOOL CATALOG</p><h1>工具目录</h1><p class="lead">路径入口与参数说明。所有工具结果以页面文本和 JSON 形式呈现。</p><h2>工具入口</h2><ul><li><a href="../tools/?tool=echo&message=Hello">echo</a>：message，回显文本。</li><li><a href="../tools/?tool=calc&expr=(12%2B8)*3">calc</a>：expr，数学表达式。</li><li><a href="../tools/?tool=text&op=upper&text=hello">text</a>：op=upper|lower|reverse|trim|replace；text；replace 另需 find、with。</li><li><a href="../tools/?tool=count&text=Hello%20world">count</a>：text，统计字符、单词、行、UTF-8 字节。</li><li><a href="../tools/?tool=json&mode=pretty&data=%7B%22x%22%3A1%7D">json</a>：data；mode=pretty|minify|keys。</li><li><a href="../tools/?tool=encode&mode=url-encode&text=hello">encode</a>：text；mode=url-encode|url-decode|base64-encode|base64-decode。</li><li><a href="../tools/?tool=random&type=int&min=1&max=10">random</a>：type=uuid|int|float；int 可用 min、max。</li><li><a href="../tools/?tool=time&tz=Asia%2FTokyo">time</a>：tz，IANA 时区名。</li><li><a href="../tools/?tool=convert&value=100&from=cm&to=m">convert</a>：value、from、to。长度 m/km/cm/mm/mi/ft/in；质量 kg/g/mg/lb/oz；温度 C/F/K。</li><li><a href="../tools/?tool=hash&text=hello">hash</a>：text，SHA-256。</li><li><a href="../tools/?tool=read&path=data.txt">read</a>：path=data.txt|data/records.json。</li><li><a href="../write/">write</a>：token、text、from，追加到 data.txt。</li></ul><h2>返回结构</h2><pre>{"protocol":"URL-Agent/0.1","tool":"calc","status":"ok","input":{"expr":"2+3"},"output":{"value":5}}</pre><p>参数采用 URL 查询字符串，文本使用 UTF-8 百分号编码。工具页面会显示实际执行结果。</p><p>写入工具会修改仓库；其余目录工具为只读或纯计算操作。</p><p><a href="../">返回主页</a></p></article></main><footer class="footer">URL-Agent Lab · Tool Catalog</footer></body></html>
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>工具目录 · URL-Agent Lab</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body><header class="topbar"><a class="brand" href="../"><span class="brand-mark">U</span><span>URL-Agent Lab</span></a><a class="top-note" href="../protocol/">协议说明</a></header>
+<main class="container"><article class="content-card">
+<p class="eyebrow">TOOL CATALOG</p><h1>工具目录与调用说明</h1><p class="lead">使用统一工具入口 /tools/。tool 参数选择工具，其余参数作为输入。</p>
+<h2>统一调用格式</h2><pre>/tools/?tool=工具名&参数名=参数值</pre>
+<h2>文本与计算</h2><ul>
+<li><a href="../tools/?tool=echo&message=Hello%20Agent">Echo</a> — message：回显文本。</li>
+<li><a href="../tools/?tool=calc&expr=(12%2B8)*3">Calculator</a> — expr：数学表达式，支持 +、-、*、/、%、括号。</li>
+<li><a href="../tools/?tool=text&op=upper&text=hello">Text</a> — op：upper、lower、reverse、trim、replace；text：输入文本；replace 另需 find、with。</li>
+<li><a href="../tools/?tool=count&text=Hello%20world">Count</a> — text：统计字符、单词、行数和 UTF-8 字节数。</li>
+</ul>
+<h2>数据处理</h2><ul>
+<li><a href="../tools/?tool=json&mode=pretty&data=%7B%22name%22%3A%22AI%22%7D">JSON</a> — data：URL 编码后的 JSON；mode：pretty、minify、keys。</li>
+<li><a href="../tools/?tool=encode&mode=url-encode&text=hello%20world">Encode</a> — mode：url-encode、url-decode、base64-encode、base64-decode；text：输入文本。</li>
+<li><a href="../tools/?tool=hash&text=hello">SHA-256</a> — text：待计算摘要的文本。</li>
+</ul>
+<h2>生成、时间与换算</h2><ul>
+<li><a href="../tools/?tool=random&type=uuid">Random</a> — type：uuid、int、float；整数可附带 min、max。</li>
+<li><a href="../tools/?tool=time&tz=Asia%2FTokyo">Time</a> — tz：IANA 时区，例如 Asia/Tokyo 或 UTC。</li>
+<li><a href="../tools/?tool=convert&value=100&from=cm&to=m">Convert</a> — value、from、to。长度：m、km、cm、mm、mi、ft、in；质量：kg、g、mg、lb、oz；温度：C、F、K。</li>
+</ul>
+<h2>仓库数据</h2><ul>
+<li><a href="../tools/?tool=read&path=data.txt">Read</a> — path：data.txt 或 data/records.json，读取公开数据。</li>
+<li><a href="../write/">Write</a> — token、text、from：向仓库 data.txt 追加一条记录。</li>
+</ul>
+<h2>返回结构</h2><pre>{
+  "protocol": "URL-Agent/0.1",
+  "tool": "calc",
+  "status": "ok",
+  "input": {"expr": "2+3"},
+  "output": {"value": 5}
+}</pre>
+<p>状态包括 ok、error、ready。ready 表示还缺少必要参数；error 会包含 error.message。</p>
+<p>参数使用标准 URL 查询字符串，文本按 UTF-8 百分号编码。所有工具都在访问页面后显示结构化结果。</p>
+<p>Write 会修改仓库内容；其他工具为只读或本地计算。</p>
+<div class="actions"><a class="button primary" href="../">返回工具主页</a><a class="button secondary" href="../protocol/">协议说明</a></div>
+</article></main><footer class="footer">URL-Agent Lab · Tool Catalog</footer></body></html>

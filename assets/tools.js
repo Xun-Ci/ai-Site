@@ -5,7 +5,7 @@
   var tool = params.get("tool") || "";
   var input = {};
   params.forEach(function (value, key) {
-    if (key !== "tool") input[key] = value;
+    if (key !== "tool" && key !== "v" && key.indexOf("utm_") !== 0) input[key] = value;
   });
 
   var titleNode = document.getElementById("tool-title");

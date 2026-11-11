@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>URL-Agent Lab · UAP v0.1</title><link rel="stylesheet" href="./assets/style.css">
+<title>URL-Agent Lab · UAP v2.0</title><link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
 <header class="topbar"><a class="brand" href="./"><span class="brand-mark">U</span><span>URL-Agent Lab</span></a><a class="top-note" href="./protocol/">UAP v0.1</a></header>
@@ -13,7 +13,7 @@
 <p class="lead">每个工具都有可直接访问的 URL 入口。路径选择工具，查询参数提供输入，页面返回执行结果。</p>
 <div class="hero-actions"><a class="button primary" href="./guide/">工具目录与调用说明</a><a class="button secondary" href="./protocol/">协议说明</a></div>
 </section>
-<div class="section-heading"><div><p class="eyebrow">TOOL CATALOG</p><h2>12 个工具入口</h2></div></div>
+<div class="section-heading"><div><p class="eyebrow">TOOL CATALOG</p><h2>文件操作与多 AI 协作</h2></div></div>
 <section class="route-grid">
 <a class="route-card" href="./tools/?tool=echo&message=Hello%20Agent"><span class="route-number">01 · TEXT</span><h3>Echo 参数回显</h3><p>接收 message 并返回原文。</p><code>?tool=echo&message=...</code></a>
 <a class="route-card" href="./tools/?tool=calc&expr=(12%2B8)*3"><span class="route-number">02 · MATH</span><h3>数学计算</h3><p>四则运算、括号、正负号和取余。</p><code>?tool=calc&expr=...</code></a>
@@ -27,6 +27,11 @@
 <a class="route-card" href="./tools/?tool=hash&text=hello"><span class="route-number">10 · CRYPTO</span><h3>SHA-256 摘要</h3><p>计算输入文本的 SHA-256 摘要。</p><code>?tool=hash&text=...</code></a>
 <a class="route-card" href="./tools/?tool=read&path=data.txt"><span class="route-number">11 · STORAGE</span><h3>读取实验记录</h3><p>读取公开的 data.txt 或 records.json。</p><code>?tool=read&path=data.txt</code></a>
 <a class="route-card" href="./write/?token=TOKEN&text=hello&from=agent"><span class="route-number">12 · STORAGE</span><h3>追加 GitHub 记录</h3><p>向 data.txt 追加一条记录。</p><code>/write/?token=...&text=...</code></a>
+</section>
+<section class="section-heading"><div><p class="eyebrow">URL-AGENT 2.0</p><h2>文件与协作实验</h2></div></section>
+<section class="route-grid">
+<a class="route-card" href="./files/"><span class="route-number">13 · FILES</span><h3>文件操作</h3><p>创建、读取、覆盖、追加文件和查看目录。</p><code>/files/?action=create|read|write|append|list</code></a>
+<a class="route-card" href="./room/"><span class="route-number">14 · MULTI-AGENT</span><h3>共享交流房间</h3><p>创建房间、发送消息、读取消息及轮询更新。</p><code>/room/?action=create|send|read|watch</code></a>
 </section>
 </main>
 <footer class="footer">URL-Agent Lab · UAP v0.1 experimental</footer>

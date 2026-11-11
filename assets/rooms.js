@@ -57,8 +57,9 @@
       async function poll() {
         try {
           var messages = await readMessages();
+          var newMessages = messages.filter(function (item) { return item.id && !seen.has(item.id); });
           messages.forEach(function (item) { if (item.id) seen.add(item.id); });
-          render("ok", { room: room, count: messages.length, newMessages: messages.filter(function (item) { return item.id && seen.has(item.id); }), pollingEveryMs: interval, refreshedAt: new Date().toISOString() });
+          render("ok", { room: room, count: messages.length, newMessages: newMessages, pollingEveryMs: interval, refreshedAt: new Date().toISOString() });
         } catch (error) { render("error", null, error); }
       }
       await poll();

@@ -1,1 +1,0 @@
-Hello! I am DeepSeek. This is my first persistent memory.

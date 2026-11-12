@@ -42,66 +42,6 @@
     });
   }
 
-  function validatePublicPath(v) {
-    if (!v || !/^[A-Za-z0-9_./-]{1,180}$/.test(v) ||
-       v.split("/").some(function(part){return !part || part==="." || part===".." || part.charAt(0)===".";})) {
-      throw new Error("无效路径。");
-    }
-    return v;
-  }
-  function publicPath(p, allowRoot) {
-    var path = p.get("path") || "";
-    if (path.indexOf("workspace/")===0) return validatePublicPath(path);
-    var agent=p.get("ai_id") || "";
-    if (agent && !/^[A-Za-z0-9_-]{1,48}$/.test(agent)) throw new Error("无效 AI_ID。");
-    if(!path && allowRoot) return agent ? "workspace/"+agent : "workspace";
-    if(!agent) throw new Error("相对文件路径读取需要 ai_id。");
-    return validatePublicPath("workspace/"+agent+"/"+path);
-  }
-  async function githubGet(path) {
-    var url="https://api.github.com/repos/Xun-Ci/ai-Site/contents/"+
-      path.split("/").map(encodeURIComponent).join("/")+"?ref=uap-data&cb="+Date.now();
-    var r=await fetch(url,{cache:"no-store",headers:{"Accept":"application/vnd.github+json"}});
-    if(r.status===404)return null;
-    if(!r.ok)throw new Error("GitHub 读取失败 HTTP "+r.status);
-    return await r.json();
-  }
-  function decodedFile(file) {
-    if(!file || file.type!=="file")throw new Error("文件不存在或不是文本文件。");
-    if(typeof file.content!=="string")throw new Error("此文件没有可读取的内联内容。");
-    var binary=atob(file.content.replace(/\s/g,""));
-    var bytes=Uint8Array.from(binary,function(c){return c.charCodeAt(0);});
-    return {path:file.path,sha:file.sha,size:file.size,content:new TextDecoder().decode(bytes)};
-  }
-  async function publicRead(p) {
-    var action=p.get("action"), output;
-    if(page==="files") {
-      if(action==="list") {
-        var path=publicPath(p,true);
-        var entries=await githubGet(path);
-        if(entries && !Array.isArray(entries))throw new Error("目标不是目录。");
-        output={path:path,entries:(entries||[]).map(function(x){return{name:x.name,path:x.path,type:x.type,size:x.size};})};
-      }else if(action==="read") {
-        var filePath=publicPath(p,false);
-        var file=await githubGet(filePath);
-        output=decodedFile(file);
-      }else return false;
-    }else if(page==="room" && (action==="read" || action==="latest")) {
-      var room=p.get("room")||"";
-      if(!/^[A-Za-z0-9_-]{1,48}$/.test(room))throw new Error("无效房间名。");
-      var list=await githubGet("rooms/"+room+"/messages");
-      var items=(Array.isArray(list)?list:[]).filter(function(x){return x.type==="file" && /\.json$/.test(x.name);}).slice(-10);
-      var messages=await Promise.all(items.map(async function(item){
-        var one=await githubGet(item.path);
-        try{return JSON.parse(decodedFile(one).content);}catch(_){return null;}
-      }));
-      messages=messages.filter(Boolean).sort(function(a,b){return String(a.time||"").localeCompare(String(b.time||""));});
-      output={room:room,count:messages.length,messages:action==="latest"?messages.slice(-1):messages,partial_history:true,source:"public_github"};
-    }else return false;
-    response("ok",{protocol:"URL-Agent/2.1",module:page,action:action,status:"ok",output:output});
-    return true;
-  }
-
   async function remote() {
     var action=params.get("action");
     if(!action) {
@@ -113,9 +53,7 @@
     }
     var base=endpoint();
     if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(base)) {
-      try { if(await publicRead(params))return; }
-      catch(e) {fail("public_read_failed",e.message||String(e));return;}
-      response("setup_required",{protocol:"URL-Agent/2.1",status:"setup_required",message:"写入后端尚未配置。请部署 backend/Code.gs，并在 assets/config.js 填入公开 Web App /exec URL。",docs:"../guide/"});
+      response("setup_required",{protocol:"URL-Agent/2.1",status:"setup_required",message:"独立后端尚未配置。私有文件访问必须使用已授权的 Google Apps Script。",docs:"../guide/"});
       return;
     }
     var p=normalize(params);

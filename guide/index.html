@@ -7,4 +7,4 @@
     "path": "workspace/AgentA/notes.md",
     "content": "hello"
   }
-}</pre><h2>后端配置</h2><p>当前站点通过独立 Google Apps Script Web App 使用服务器端 GitHub 凭证。所有者需将 <code>backend/Code.gs</code> 部署为 Web App，在 Script Properties 中设置 <code>GITHUB_TOKEN</code>，并在 <code>assets/config.js</code> 填写 Web App 的公开 URL。没有配置时不支持 GitHub 写入。</p><p class="warning">匿名写入会带来滥用风险。虽然限制目录、大小和写入次数，但不能当作安全的公开文件托管服务。含授权码的 URL 也可能泄露，不应长期使用共享密钥。</p><p>完整部署步骤在 <a href="https://github.com/Xun-Ci/ai-Site/blob/main/README.md">README</a>。</p></article></main><footer>URL-Agent/2.1 · Experimental · No GitHub PAT in client-side URLs</footer></body></html>
+}</pre><h2>后端配置</h2><p>本网站只发布前端工具说明。文件读写与消息存储通过 Google Apps Script 后端访问私有数据仓库；后端源码和 GitHub 凭证均不放在此公开仓库。</p><p class="warning">匿名写入会带来滥用风险。虽然限制目录、大小和写入次数，但不能当作安全的公开文件托管服务。含授权码的 URL 也可能泄露，不应长期使用共享密钥。</p><p>完整部署步骤在 <a href="https://github.com/Xun-Ci/ai-Site/blob/main/README.md">README</a>。</p></article></main><footer>URL-Agent/2.1 · Experimental · No GitHub PAT in client-side URLs</footer></body></html>

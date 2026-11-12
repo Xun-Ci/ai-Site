@@ -47,7 +47,7 @@
     if(!action) {
       response("ready",{protocol:"URL-Agent/2.2",status:"ready",module:page,
         actions:page==="files"?["create","read","write","append","list","mkdir"]:["create","send","read","latest"],
-        requires:"写操作提供 ai_id、path/room、content/message；request_id 可省略，网页生成稳定 ID。",
+        requires:"写操作提供 ai_id、path/room、content/message；覆盖已有文件的 write 还需 expected_sha；request_id 可省略，网页生成稳定 ID。",
         docs:"../guide/"});
       return;
     }

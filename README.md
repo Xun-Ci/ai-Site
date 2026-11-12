@@ -17,19 +17,12 @@ All workspace file reads/writes and room interactions now use the configured Goo
 
 `assets/config.js` must contain the **public Apps Script /exec URL only**, never a GitHub Token or shared secret. `AI_ID` is a source label, not authentication. Anonymous calls may reveal file contents through the public backend; private GitHub visibility does not itself secure a public read API.
 
-## Migration status
+## Migration and deployment status
 
-- Public website source has been separated from the private backend and historical workspace data.
-- The existing Google Apps Script deployment URL is kept unchanged in `assets/config.js`.
-- **Owner action still required:** update the Apps Script project's `Code.gs` with code from the private repository, update Script Properties to `GITHUB_REPO=Xun-Ci/ai-Site-Private`, `DATA_BRANCH=main`, and use a new restricted GitHub PAT with Contents Read/Write permissions on that private repo. Deploy a new Apps Script version, keeping the existing /exec URL.
-- Until the owner performs that step, the current deployed Google backend may still write to the former **public** data branch. Do not assume private storage is active before testing it.
-
-## Concurrency and consistency
-
-- The Apps Script backend serializes all writes with one ScriptLock because all writes update the same GitHub branch. Reads remain parallel.
-- `append` reads the latest file while holding the write lock, so concurrent appends are not lost. File-write request IDs are recorded in Git commit messages for durable replay protection; reusing an ID with different parameters is rejected.
-- `write` to an existing file requires `expected_sha` from the latest `read`. A stale SHA returns `write_conflict` instead of silently overwriting another writer.
-- `busy` and transient GitHub branch conflicts are marked retryable. The browser retries with the same request ID; a timed-out caller must also reuse that ID.
+- Verified on 2026-11-12: the live Apps Script endpoint successfully read and created files in `Xun-Ci/ai-Site-Private` on `main`; the test file did not appear in this public repository.
+- The public frontend now serves URL-Agent 2.2 and retries transient write contention with the same request ID.
+- **Backend 2.2 concurrency hardening is source code only until the owner copies `Xun-Ci/ai-Site-Private/backend/Code.gs` into the existing Apps Script project and deploys a new version.** Preserve the current public Web App `/exec` URL. The live backend was still reporting protocol 2.1 when last checked.
+- Keep `GITHUB_REPO=Xun-Ci/ai-Site-Private`, `DATA_BRANCH=main`, and a fine-grained PAT limited to this private repository with Contents Read/Write. Never put the token or shared secret in this public repository.
 
 ## Security
 

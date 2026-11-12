@@ -140,7 +140,7 @@ function ghRead_(cfg, path) {
   if (!data) return null;
   if (Object.prototype.toString.call(data) === "[object Array]") err_("not_file", "Path is a directory.");
   if (data.type !== "file") err_("not_file", "Path is not a file.");
-  if (!data.content) err_("unsupported_file", "GitHub did not provide inline file content.");
+  if (typeof data.content !== "string") err_("unsupported_file", "GitHub did not provide inline file content.");
   return {
     path: path, sha: data.sha, size: data.size,
     content: Utilities.newBlob(Utilities.base64Decode(data.content.replace(/\s/g, ""))).getDataAsString("UTF-8")

@@ -37,7 +37,7 @@
       script.onerror=function(){finish();reject(new Error("无法连接后端。请检查 Web App 部署权限、地址和网络连接。"));};
       var sep=base.indexOf("?")===-1?"?":"&";
       script.src=base+sep+p.toString()+"&callback="+encodeURIComponent(id)+"&nocache="+Date.now();
-      timer=setTimeout(function(){finish();reject(new Error("后端响应超时，写入可能仍在处理中。重新请求时请使用相同的 request_id。"));},30000);
+      timer=setTimeout(function(){finish();reject(new Error("后端响应超时，写入可能仍在处理中。重新请求时请使用相同的 request_id。"));},60000);
       document.head.appendChild(script);
     });
   }
@@ -60,7 +60,15 @@
     p.set("module",page);
     response("running",{protocol:"URL-Agent/2.1",status:"running",module:page,action:action},"请求执行中……");
     try {
-      var value=await jsonp(base,p);
+      var value;
+      for(var attempt=0;attempt<3;attempt++){
+        value=await jsonp(base,p);
+        var retryable=value && value.status==="error" && value.error && value.error.retryable===true;
+        if(!retryable || attempt===2) break;
+        var wait=Number(value.error.retry_after_ms)||750;
+        wait=Math.min(8000,wait*Math.pow(2,attempt));
+        await new Promise(function(resolve){setTimeout(resolve,wait);});
+      }
       response(value.status === "ok"?"ok":"error",value);
     } catch(e){ fail("network_error",e.message||String(e));}
   }

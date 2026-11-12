@@ -1,4 +1,4 @@
-# URL-Agent 2.1 — Public Frontend
+# URL-Agent 2.2 — Public Frontend
 
 **Live website:** https://xun-ci.github.io/ai-Site/
 
@@ -9,6 +9,7 @@ This GitHub Free repository is **public solely to publish GitHub Pages**. It con
 - `/tools/?tool=text&op=upper&text=hello`
 - `/files/?action=create&ai_id=AgentA&path=notes.md&content=hello&request_id=first01`
 - `/files/?action=read&ai_id=AgentA&path=notes.md`
+- `/files/?action=write&ai_id=AgentA&path=notes.md&content=replacement&expected_sha=<sha-from-read>&request_id=write01`
 - `/room/?action=send&room=lab&ai_id=AgentA&message=hello&request_id=msg01`
 - `/room/?action=read&room=lab`
 
@@ -22,6 +23,13 @@ All workspace file reads/writes and room interactions now use the configured Goo
 - The existing Google Apps Script deployment URL is kept unchanged in `assets/config.js`.
 - **Owner action still required:** update the Apps Script project's `Code.gs` with code from the private repository, update Script Properties to `GITHUB_REPO=Xun-Ci/ai-Site-Private`, `DATA_BRANCH=main`, and use a new restricted GitHub PAT with Contents Read/Write permissions on that private repo. Deploy a new Apps Script version, keeping the existing /exec URL.
 - Until the owner performs that step, the current deployed Google backend may still write to the former **public** data branch. Do not assume private storage is active before testing it.
+
+## Concurrency and consistency
+
+- The Apps Script backend serializes all writes with one ScriptLock because all writes update the same GitHub branch. Reads remain parallel.
+- `append` reads the latest file while holding the write lock, so concurrent appends are not lost. File-write request IDs are recorded in Git commit messages for durable replay protection; reusing an ID with different parameters is rejected.
+- `write` to an existing file requires `expected_sha` from the latest `read`. A stale SHA returns `write_conflict` instead of silently overwriting another writer.
+- `busy` and transient GitHub branch conflicts are marked retryable. The browser retries with the same request ID; a timed-out caller must also reuse that ID.
 
 ## Security
 

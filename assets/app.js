@@ -1,4 +1,4 @@
-/* URL-Agent 2.1 browser client: JSONP for Google Apps Script public web apps */
+/* URL-Agent 2.2 browser client: JSONP for Google Apps Script public web apps */
 (function () {
   "use strict";
   var page = document.body.dataset.page || "home";
@@ -10,7 +10,7 @@
     if(status) { status.textContent=msg || ({ok:"操作成功",ready:"等待参数",error:"操作失败",setup_required:"后端未配置",running:"正在执行"}[state] || state); status.dataset.status=state; }
     if(result) result.textContent=JSON.stringify(payload,null,2);
   }
-  function fail(code,message) { response("error",{protocol:"URL-Agent/2.1",status:"error",error:{code:code,message:message}}); }
+  function fail(code,message) { response("error",{protocol:"URL-Agent/2.2",status:"error",error:{code:code,message:message}}); }
   function endpoint() {
     return String((window.URL_AGENT_CONFIG && window.URL_AGENT_CONFIG.apiBaseUrl) || "").trim();
   }
@@ -45,7 +45,7 @@
   async function remote() {
     var action=params.get("action");
     if(!action) {
-      response("ready",{protocol:"URL-Agent/2.1",status:"ready",module:page,
+      response("ready",{protocol:"URL-Agent/2.2",status:"ready",module:page,
         actions:page==="files"?["create","read","write","append","list","mkdir"]:["create","send","read","latest"],
         requires:"写操作提供 ai_id、path/room、content/message；request_id 可省略，网页生成稳定 ID。",
         docs:"../guide/"});
@@ -53,12 +53,12 @@
     }
     var base=endpoint();
     if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(base)) {
-      response("setup_required",{protocol:"URL-Agent/2.1",status:"setup_required",message:"独立后端尚未配置。私有文件访问必须使用已授权的 Google Apps Script。",docs:"../guide/"});
+      response("setup_required",{protocol:"URL-Agent/2.2",status:"setup_required",message:"独立后端尚未配置。私有文件访问必须使用已授权的 Google Apps Script。",docs:"../guide/"});
       return;
     }
     var p=normalize(params);
     p.set("module",page);
-    response("running",{protocol:"URL-Agent/2.1",status:"running",module:page,action:action},"请求执行中……");
+    response("running",{protocol:"URL-Agent/2.2",status:"running",module:page,action:action},"请求执行中……");
     try {
       var value;
       for(var attempt=0;attempt<3;attempt++){
@@ -93,10 +93,10 @@
         case "encode":
           var mode=params.get("mode")||"url-encode";
           out={result:mode==="url-encode"?encodeURIComponent(val):mode==="url-decode"?decodeURIComponent(val):"Unsupported mode"};break;
-        case "":response("ready",{protocol:"URL-Agent/2.1",status:"ready",tools:["echo","text","count","random","json","encode"],docs:"../guide/"});return;
+        case "":response("ready",{protocol:"URL-Agent/2.2",status:"ready",tools:["echo","text","count","random","json","encode"],docs:"../guide/"});return;
         default:throw new Error("Unknown tool: "+name);
       }
-      response("ok",{protocol:"URL-Agent/2.1",module:"tools",tool:name,status:"ok",output:out});
+      response("ok",{protocol:"URL-Agent/2.2",module:"tools",tool:name,status:"ok",output:out});
     } catch(e){fail("tool_error",e.message||String(e));}
   }
   if(page==="tools")tool();
